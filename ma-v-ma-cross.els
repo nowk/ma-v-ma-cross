@@ -40,21 +40,57 @@ Inputs:
 Variables:
 	bool isBullCross( false ),
 	bool isBearCross( false ),
-	int plotIndex( 0 );
+	intrabarpersist bool TrendUp( false ),
+	intrabarpersist bool TrendDn( false );
+
+Setplottype( 2, Ptstring );
+Setplottype( 3, Ptstring );
+
+Begin
+	Plot1( 0, !("MaCrossIdx"), White, Default, 2 );
 	
-// plot index is 0
-plotIndex = 0;
+	// specific to radar screen
+	Plot2( "", "Trend" );
+	Plot3( "", "Alert" );
+	Setplotbgcolor( 3, Transparent );
+End;
 
 // plot trend biases
 If FastAvg > SlowAvg Then
 Begin
-	plotIndex = BullTrendIdx;
+	Plot1(BullTrendIdx, !("MaCrossIdx"));
 	Setplotcolor( 1, Green );
-End
-Else If FastAvg < SlowAvg Then
+	
+	If ( BarStatus( 1 ) = 2 ) then
+	Begin
+		TrendUp = true;
+		TrendDn = false;
+	End;
+End;
+
+If FastAvg < SlowAvg Then
 Begin
-	plotIndex = BearTrendIdx;
+	Plot1(BearTrendIdx, !("MaCrossIdx"));
 	Setplotcolor( 1, Red );
+
+	If ( BarStatus( 1 ) = 2 ) then
+	Begin
+		TrendUp = false;
+		TrendDn = true;
+	End;
+End;
+
+// NOTE for Radarscreen Trend coloring to work, need to load additional bars
+// NOTE this must come after the assignments above, or it will not switch over
+// after the close of the market.
+If ( TrendUp ) Then
+Begin
+	Setplotbgcolor( 2, Green );
+End;
+
+If ( TrendDn ) Then
+Begin
+	Setplotbgcolor( 2, Red );
 End;
 
 // TODO handle equal mas
@@ -63,16 +99,25 @@ End;
 isBullCross = FastAvg[1] < SlowAvg[1] And FastAvg > SlowAvg;
 If isBullCross = True Then
 Begin
-	plotIndex = BullCrossIdx;
+	Plot1(BullCrossIdx, !("MaCrossIdx"));
 	Setplotcolor( 1, Green );
+	
+	Plot3( !( "BullCross" ), "Alert" );
+	Setplotbgcolor( 3, Blue );
+	
+	Alert( !("MaCrossIdx: BullCross") );
 End;
 
 // bear crossing
 isBearCross = FastAvg[1] > SlowAvg[1] And FastAvg < SlowAvg;
 if isBearCross = True Then
 Begin
-	plotIndex = BearCrossIdx;
+	Plot1(BearCrossIdx, !("MaCrossIdx"));
 	Setplotcolor( 1, Red );
+	
+	Plot3( !( "BearCross" ), "Alert" );
+	Setplotbgcolor( 3, Magenta );
+	
+	Alert( !("MaCrossIdx: BearCross") );
 End;
 
-Plot1(plotIndex, !("MaCrossIdx"));

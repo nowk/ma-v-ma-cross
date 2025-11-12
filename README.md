@@ -6,12 +6,18 @@ Tradestation indicator that shows (simple) Moving Average crossovers. And also s
 
 ![MA v MA Cross Sample](assets/chart.jpg)
 
+---
+
+
+![Radarscreen Sample](assets/radarscreen.png)
+
 #### NOTE
 
 - This does not support any kind of equal MA situations. This will default to which ever side the last crossover was on.
+- Radarscreen Trend does not update untill the confirmation on close. It will show the last confirmed trend until then. All other values update intrabar.
 
 
 #### TODO
 
-- [ ] Better visual support in Radarscreen (currently that is not it's main use case)
+- [x] Better visual support in Radarscreen (currently that is not it's main use case)
 
